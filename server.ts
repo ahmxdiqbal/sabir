@@ -128,7 +128,7 @@ async function callDeepSeek(messages: { role: string; content: string }[]): Prom
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'deepseek-chat',
+      model: process.env.DEEPSEEK_MODEL || 'deepseek-v4-pro',
       messages,
       temperature: 0.3,
       response_format: { type: 'json_object' },
