@@ -19,7 +19,7 @@ html, body {
 }
 
 main {
-  max-width: 720px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 4rem 2rem 4rem;
 }
@@ -302,13 +302,44 @@ hr {
 #dashboard { text-align: center; }
 #dashboard .lede { margin-bottom: 2rem; }
 
-.queue {
+/* status column grid — shared by queue and library */
+.status-grid {
+  display: grid;
+  gap: 1.25rem;
+  text-align: left;
+}
+
+.status-column {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  max-width: 36rem;
+  min-width: 0;
+}
+
+.status-column-header {
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #999;
+  padding: 0 0 0.625rem;
+  margin: 0 0 0.75rem;
+  border-bottom: 2px solid #e5e3dc;
+  font-variant-numeric: tabular-nums;
+}
+.status-column-header.solid      { border-color: #8fb58b; color: #2d5a2a; }
+.status-column-header.learning   { border-color: #8b9fc5; color: #1a3a6b; }
+.status-column-header.shaky      { border-color: #d4b84c; color: #6b5418; }
+.status-column-header.unknown    { border-color: #c47b73; color: #6b2a23; }
+.status-column-header.not_probed { border-color: #c0beb8; color: #666; }
+
+.status-column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.queue {
+  max-width: none;
   margin: 0 auto;
-  text-align: left;
 }
 
 .queue-card {
@@ -404,27 +435,9 @@ hr {
 }
 
 .library {
-  max-width: 36rem;
+  max-width: none;
   margin: 0 auto;
   text-align: left;
-}
-
-.library-category {
-  margin-bottom: 2rem;
-}
-
-.category-label {
-  font-size: 0.75rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #999;
-  margin: 0 0 0.5rem;
-  padding-left: 0.25rem;
-}
-
-.library-list {
-  display: flex;
-  flex-direction: column;
 }
 
 .library-row {

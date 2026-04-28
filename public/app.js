@@ -214,6 +214,28 @@
     document.getElementById('restart').addEventListener('click', () => location.reload());
     document.getElementById('restart-fail').addEventListener('click', () => location.reload());
     // ── Dashboard ────────────────────────────────────────────────────────────────
+    const STATUS_ORDER = [
+        ['solid', 'Solid'],
+        ['learning', 'Learning'],
+        ['shaky', 'Shaky'],
+        ['unknown', 'Unknown'],
+        ['not_probed', 'Not probed'],
+    ];
+    function buildStatusColumn(status, label, items, renderItem) {
+        const col = document.createElement('div');
+        col.className = 'status-column';
+        const header = document.createElement('div');
+        header.className = `status-column-header ${status}`;
+        header.textContent = `${label} — ${items.length}`;
+        col.appendChild(header);
+        const list = document.createElement('div');
+        list.className = 'status-column-list';
+        for (const item of items) {
+            list.appendChild(renderItem(item));
+        }
+        col.appendChild(list);
+        return col;
+    }
     async function loadDashboard() {
         show(dashboard);
         const queueEl = document.getElementById('queue');
@@ -240,8 +262,22 @@
                 emptyEl.classList.remove('hidden');
             }
             else {
-                for (const item of items)
-                    queueEl.appendChild(buildQueueCard(item));
+                const grouped = new Map();
+                for (const item of items) {
+                    if (!grouped.has(item.status))
+                        grouped.set(item.status, []);
+                    grouped.get(item.status).push(item);
+                }
+                queueEl.classList.add('status-grid');
+                let queueCols = 0;
+                for (const [status, label] of STATUS_ORDER) {
+                    const group = grouped.get(status);
+                    if (!group || !group.length)
+                        continue;
+                    queueEl.appendChild(buildStatusColumn(status, label, group, buildQueueCard));
+                    queueCols++;
+                }
+                queueEl.style.gridTemplateColumns = `repeat(${queueCols}, 1fr)`;
             }
             renderLibrary(lib, countsEl, libEl);
         }
@@ -250,39 +286,35 @@
         }
     }
     function renderLibrary(lib, countsEl, libEl) {
-        const ORDER = [
-            ['solid', 'solid'],
-            ['learning', 'learning'],
-            ['shaky', 'shaky'],
-            ['unknown', 'unknown'],
-            ['not_probed', 'not probed'],
-        ];
         countsEl.innerHTML = '';
-        for (const [k, label] of ORDER) {
+        for (const [k, label] of STATUS_ORDER) {
             const n = lib.counts[k] || 0;
             if (n === 0)
                 continue;
             const pill = document.createElement('span');
             pill.className = `pill ${k}`;
-            pill.textContent = `${n} ${label}`;
+            pill.textContent = `${n} ${label.toLowerCase()}`;
             countsEl.appendChild(pill);
         }
-        libEl.innerHTML = '';
+        const grouped = new Map();
         for (const cat of lib.categories) {
-            const wrap = document.createElement('div');
-            wrap.className = 'library-category';
-            wrap.appendChild(Object.assign(document.createElement('h4'), {
-                className: 'category-label',
-                textContent: cat.label,
-            }));
-            const list = document.createElement('div');
-            list.className = 'library-list';
             for (const skill of cat.skills) {
-                list.appendChild(buildLibraryRow(skill));
+                if (!grouped.has(skill.status))
+                    grouped.set(skill.status, []);
+                grouped.get(skill.status).push(skill);
             }
-            wrap.appendChild(list);
-            libEl.appendChild(wrap);
         }
+        libEl.innerHTML = '';
+        libEl.classList.add('status-grid');
+        let libCols = 0;
+        for (const [status, label] of STATUS_ORDER) {
+            const group = grouped.get(status);
+            if (!group || !group.length)
+                continue;
+            libEl.appendChild(buildStatusColumn(status, label, group, buildLibraryRow));
+            libCols++;
+        }
+        libEl.style.gridTemplateColumns = `repeat(${libCols}, 1fr)`;
     }
     function buildLibraryRow(skill) {
         const row = document.createElement('div');
