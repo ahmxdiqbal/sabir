@@ -1,0 +1,14 @@
+{
+  "name": "sabir",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local Arabic tutor — Quranic comprehension via pattern recognition",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1"
+  }
+}

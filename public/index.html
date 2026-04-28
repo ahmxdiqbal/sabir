@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sabir — Arabic Tutor</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main id="app">
+    <section id="boot" class="screen">
+      <p class="thinking-text">Loading…</p>
+    </section>
+
+    <section id="intro" class="screen hidden">
+      <h1 class="title">Sabir</h1>
+      <p class="lede">A short look at how you read the Qur'an today. Ten verses, no translations. Type whatever you understand — partial, hesitant, in-your-own-words. There are no wrong answers.</p>
+      <button id="start" class="primary">Begin</button>
+    </section>
+
+    <section id="card" class="screen hidden">
+      <p class="ref" id="card-ref"></p>
+      <p class="verse" lang="ar" dir="rtl" id="card-verse"></p>
+
+      <div id="answer-area">
+        <textarea id="answer" placeholder="What do you read here? Anything you can pick out — a word, a structure, the gist." rows="4"></textarea>
+        <div class="actions">
+          <span class="hint" id="hint">Press ⌘↩ to submit</span>
+          <button id="submit" class="primary">Submit</button>
+        </div>
+      </div>
+
+      <div id="follow-up" class="hidden">
+        <p class="follow-up-q" id="follow-up-q"></p>
+        <textarea id="follow-up-answer" placeholder="A line or two." rows="3"></textarea>
+        <div class="actions">
+          <span class="hint">⌘↩ to submit</span>
+          <button id="follow-up-submit" class="primary">Submit</button>
+        </div>
+      </div>
+
+      <div id="thinking" class="hidden">
+        <p class="thinking-text">Reading…</p>
+      </div>
+
+      <div class="progress" id="progress"></div>
+    </section>
+
+    <section id="analyzing" class="screen hidden">
+      <h2 class="title">Reading your answers…</h2>
+      <p class="lede">Mapping what you wrote against the skill taxonomy. About 20 seconds.</p>
+    </section>
+
+    <section id="snapshot" class="screen hidden">
+      <h2 class="title">Where you are</h2>
+      <p class="lede">Drawn from your answers. <strong>Solid</strong> means you showed recognition. <strong>Shaky</strong> means you got the gist but didn't show the form. <strong>Unknown</strong> means you said you didn't know, or the verse stumped you. <strong>Not probed</strong> means these 10 verses didn't exercise that skill.</p>
+      <div class="totals" id="snapshot-totals"></div>
+      <div class="buckets" id="snapshot-buckets"></div>
+      <div class="screen-actions">
+        <button id="snapshot-continue" class="primary">Start learning</button>
+        <button id="restart" class="secondary">Start over</button>
+      </div>
+    </section>
+
+    <section id="failed" class="screen hidden">
+      <h2 class="title">Couldn't read your answers</h2>
+      <p class="lede" id="failed-msg">Something went wrong analyzing the session. Check the server logs.</p>
+      <button id="restart-fail" class="secondary">Start over</button>
+    </section>
+
+    <section id="dashboard" class="screen hidden">
+      <h2 class="title">Today's lessons</h2>
+      <p class="lede" id="dashboard-lede">Patterns flagged shaky or unknown. Pick one to start.</p>
+      <div id="queue" class="queue"></div>
+      <div id="empty-queue" class="hidden">
+        <p class="empty-hint">Nothing flagged shaky or unknown right now. Browse all patterns below.</p>
+      </div>
+
+      <div class="library-divider"></div>
+
+      <h3 class="section-title">All patterns</h3>
+      <div id="library-counts" class="library-counts"></div>
+      <div id="library" class="library"></div>
+
+      <div class="dashboard-footer">
+        <a href="#" id="redo-assessment" class="link">Re-run the 10-verse assessment</a>
+      </div>
+    </section>
+
+    <section id="lesson" class="screen hidden">
+      <div class="lesson-header">
+        <a href="#" id="back-to-dashboard" class="link">← lessons</a>
+        <span id="lesson-status" class="status-pill"></span>
+      </div>
+      <p class="lesson-pattern" id="lesson-pattern"></p>
+      <p class="lesson-meaning" id="lesson-meaning"></p>
+      <div id="lesson-examples" class="examples"></div>
+      <p class="lesson-why" id="lesson-why"></p>
+      <div class="screen-actions">
+        <button id="result-fuzzy" class="secondary">Still fuzzy</button>
+        <button id="result-got-it" class="primary">I get it</button>
+      </div>
+    </section>
+
+    <section id="lesson-done" class="screen hidden">
+      <h2 class="title" id="lesson-done-title">Got it.</h2>
+      <p class="lede" id="lesson-done-lede"></p>
+      <button id="lesson-done-back" class="primary">Back to lessons</button>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

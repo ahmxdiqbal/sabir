@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "note": "Cold-start assessment verses. Curated to span a difficulty gradient from short/recognizable to longer/structurally-rich. Translations are stored server-side only — never sent to the client during assessment.",
+  "verses": [
+    {
+      "ref": "1:1",
+      "text": "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ",
+      "translation": "In the name of Allah, the Entirely Merciful, the Especially Merciful.",
+      "probes": ["definite_article_al", "idafa_basic"]
+    },
+    {
+      "ref": "1:2",
+      "text": "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ",
+      "translation": "All praise is for Allah, Lord of the worlds.",
+      "probes": ["definite_article_al", "idafa_basic", "sound_plural_masculine"]
+    },
+    {
+      "ref": "108:1",
+      "text": "إِنَّآ أَعْطَيْنَـٰكَ ٱلْكَوْثَرَ",
+      "translation": "Indeed, We have granted you al-Kawthar.",
+      "probes": ["inna_and_sisters", "verb_form_IV_perfective_sound", "attached_pronouns"]
+    },
+    {
+      "ref": "93:3",
+      "text": "مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ",
+      "translation": "Your Lord has not forsaken you, nor has He been displeased.",
+      "probes": ["negation_ma", "attached_pronouns", "verb_form_II_perfective_sound"]
+    },
+    {
+      "ref": "54:1",
+      "text": "ٱقْتَرَبَتِ ٱلسَّاعَةُ وَٱنشَقَّ ٱلْقَمَرُ",
+      "translation": "The Hour has drawn near, and the moon has split.",
+      "probes": ["verb_form_VIII_perfective_sound", "verb_form_VII_perfective_sound", "definite_article_al"]
+    },
+    {
+      "ref": "12:5",
+      "text": "قَالَ يَـٰبُنَىَّ لَا تَقْصُصْ رُءْيَاكَ عَلَىٰٓ إِخْوَتِكَ فَيَكِيدُوا۟ لَكَ كَيْدًا ۖ إِنَّ ٱلشَّيْطَـٰنَ لِلْإِنسَـٰنِ عَدُوٌّ مُّبِينٌ",
+      "translation": "He said: 'O my dear son, do not relate your vision to your brothers, lest they plot against you a plot. Indeed Satan is to mankind a clear enemy.'",
+      "probes": ["vocative_ya", "negation_la_present", "attached_pronouns", "inna_and_sisters", "active_participle_form_IV"]
+    },
+    {
+      "ref": "2:163",
+      "text": "وَإِلَـٰهُكُمْ إِلَـٰهٌ وَٰحِدٌ ۖ لَّآ إِلَـٰهَ إِلَّا هُوَ ٱلرَّحْمَـٰنُ ٱلرَّحِيمُ",
+      "translation": "And your god is one God; there is no deity except Him, the Entirely Merciful, the Especially Merciful.",
+      "probes": ["negation_la_present", "exception_illa", "attached_pronouns", "definite_article_al", "indefinite_tanwin"]
+    },
+    {
+      "ref": "17:7 (excerpt)",
+      "text": "إِنْ أَحْسَنتُمْ أَحْسَنتُمْ لِأَنفُسِكُمْ ۖ وَإِنْ أَسَأْتُمْ فَلَهَا",
+      "translation": "If you do good, you do it for yourselves; and if you do evil, [you do it] against yourselves.",
+      "probes": ["conditional_in", "verb_form_IV_perfective_sound", "attached_pronouns"]
+    },
+    {
+      "ref": "64:1",
+      "text": "يُسَبِّحُ لِلَّهِ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۖ لَهُ ٱلْمُلْكُ وَلَهُ ٱلْحَمْدُ ۖ وَهُوَ عَلَىٰ كُلِّ شَىْءٍ قَدِيرٌ",
+      "translation": "Whatever is in the heavens and whatever is on the earth exalts Allah. To Him belongs dominion, and to Him belongs all praise, and He is over all things competent.",
+      "probes": ["verb_form_II_imperfective_sound", "definite_article_al", "attached_pronouns", "sound_plural_feminine"]
+    },
+    {
+      "ref": "49:13",
+      "text": "يَـٰٓأَيُّهَا ٱلنَّاسُ إِنَّا خَلَقْنَـٰكُم مِّن ذَكَرٍ وَأُنثَىٰ وَجَعَلْنَـٰكُمْ شُعُوبًا وَقَبَآئِلَ لِتَعَارَفُوٓا۟ ۚ إِنَّ أَكْرَمَكُمْ عِندَ ٱللَّهِ أَتْقَىٰكُمْ ۚ إِنَّ ٱللَّهَ عَلِيمٌ خَبِيرٌ",
+      "translation": "O mankind, indeed We have created you from male and female and made you peoples and tribes that you may know one another. Indeed, the most noble of you in the sight of Allah is the most righteous of you. Indeed, Allah is Knowing and Acquainted.",
+      "probes": ["vocative_ya", "inna_and_sisters", "verb_form_I_perfective_sound", "attached_pronouns", "broken_plural_fuul", "verb_form_VI_perfective_sound"]
+    }
+  ]
+}
