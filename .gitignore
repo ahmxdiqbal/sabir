@@ -3,3 +3,5 @@ node_modules/
 data/ledger.json
 data/events.jsonl
 .DS_Store
+public/app.js
+dist/

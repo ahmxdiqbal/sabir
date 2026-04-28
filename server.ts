@@ -1,10 +1,15 @@
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
-const crypto = require('crypto');
-require('dotenv').config();
+import express from 'express';
+import path from 'node:path';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import dotenv from 'dotenv';
+import { scoreSession } from './lib/scoring.js';
+import type { Taxonomy, Verse, Turn, Buckets } from './lib/scoring.js';
 
-const { scoreSession } = require('./lib/scoring');
+dotenv.config();
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,45 +19,85 @@ const VERSES_PATH = path.join(DATA_DIR, 'assessment_verses.json');
 const TAXONOMY_PATH = path.join(DATA_DIR, 'taxonomy.json');
 const LEDGER_PATH = path.join(DATA_DIR, 'ledger.json');
 
-const versesData = JSON.parse(fs.readFileSync(VERSES_PATH, 'utf8'));
+const versesData = JSON.parse(fs.readFileSync(VERSES_PATH, 'utf8')) as { version: number; verses: Verse[] };
 const VERSES = versesData.verses;
-const taxonomy = JSON.parse(fs.readFileSync(TAXONOMY_PATH, 'utf8'));
+const taxonomy = JSON.parse(fs.readFileSync(TAXONOMY_PATH, 'utf8')) as Taxonomy;
 
-const sessions = new Map();
+interface Session {
+  startedAt: number;
+  answers: { ref: string; turns: Turn[] }[];
+}
 
-function logEvent(event) {
+const sessions = new Map<string, Session>();
+
+interface LogEvent {
+  type: string;
+  sessionId?: string;
+  [key: string]: unknown;
+}
+
+function logEvent(event: LogEvent): void {
   const line = JSON.stringify({ ...event, ts: new Date().toISOString() }) + '\n';
   fs.appendFile(EVENTS_PATH, line, (err) => {
     if (err) console.error('events write failed:', err);
   });
 }
 
-function newSessionId() {
+function newSessionId(): string {
   return crypto.randomBytes(8).toString('hex');
 }
 
-function findFinishedSession(sessionId) {
+interface FinishedSession {
+  type: 'assessment_finish';
+  sessionId: string;
+  ts: string;
+  answers: { ref: string; turns: Turn[] }[];
+  [key: string]: unknown;
+}
+
+function findFinishedSession(sessionId: string): FinishedSession | null {
   if (!fs.existsSync(EVENTS_PATH)) return null;
   const lines = fs.readFileSync(EVENTS_PATH, 'utf8').split('\n').filter((l) => l.trim());
   for (let i = lines.length - 1; i >= 0; i--) {
-    const ev = JSON.parse(lines[i]);
+    const ev = JSON.parse(lines[i]) as FinishedSession;
     if (ev.type === 'assessment_finish' && ev.sessionId === sessionId) return ev;
   }
   return null;
 }
 
-function readLedger() {
-  if (!fs.existsSync(LEDGER_PATH)) return null;
-  return JSON.parse(fs.readFileSync(LEDGER_PATH, 'utf8'));
+interface LedgerEntry {
+  status: string;
+  evidence: string;
+  source: string;
+  lastReviewedAt: string | null;
+  reviewCount: number;
 }
 
-function writeLedger(ledger) {
+interface Ledger {
+  version: number;
+  lastAssessmentAt?: string;
+  lastAssessmentSessionId?: string;
+  skills: Record<string, LedgerEntry>;
+}
+
+function readLedger(): Ledger | null {
+  if (!fs.existsSync(LEDGER_PATH)) return null;
+  return JSON.parse(fs.readFileSync(LEDGER_PATH, 'utf8')) as Ledger;
+}
+
+function writeLedger(ledger: Ledger): void {
   fs.writeFileSync(LEDGER_PATH, JSON.stringify(ledger, null, 2));
 }
 
-function applySnapshotToLedger(scores, sessionId) {
+interface ScoreResult {
+  status: string;
+  evidence: string;
+  source: string;
+}
+
+function applySnapshotToLedger(scores: Record<string, ScoreResult>, sessionId: string): Ledger {
   const existing = readLedger();
-  const skills = existing?.skills || {};
+  const skills: Record<string, LedgerEntry> = existing?.skills || {};
   for (const [id, r] of Object.entries(scores)) {
     const prev = skills[id] || { reviewCount: 0, lastReviewedAt: null };
     skills[id] = {
@@ -63,7 +108,7 @@ function applySnapshotToLedger(scores, sessionId) {
       reviewCount: prev.reviewCount,
     };
   }
-  const ledger = {
+  const ledger: Ledger = {
     version: 1,
     lastAssessmentAt: new Date().toISOString(),
     lastAssessmentSessionId: sessionId,
@@ -73,7 +118,7 @@ function applySnapshotToLedger(scores, sessionId) {
   return ledger;
 }
 
-async function callDeepSeek(messages) {
+async function callDeepSeek(messages: { role: string; content: string }[]): Promise<string | null> {
   const key = process.env.DEEPSEEK_API_KEY;
   if (!key) return null;
   const res = await fetch('https://api.deepseek.com/chat/completions', {
@@ -93,7 +138,7 @@ async function callDeepSeek(messages) {
     const text = await res.text();
     throw new Error(`DeepSeek ${res.status}: ${text}`);
   }
-  const data = await res.json();
+  const data = (await res.json()) as { choices: [{ message: { content: string } }] };
   return data.choices[0].message.content;
 }
 
@@ -120,8 +165,13 @@ Only ask a follow-up if a focused, useful question exists. If the learner caught
 
 After the learner answers a follow-up, always advance — no chained follow-ups.`;
 
-function buildAssessMessages(verse, turns) {
-  const transcript = turns.map((t) => `${t.role === 'user' ? 'LEARNER' : 'TUTOR'}: ${t.text}`).join('\n');
+function buildAssessMessages(
+  verse: Verse,
+  turns: Turn[],
+): { role: string; content: string }[] {
+  const transcript = turns
+    .map((t) => `${t.role === 'user' ? 'LEARNER' : 'TUTOR'}: ${t.text}`)
+    .join('\n');
   return [
     { role: 'system', content: ASSESS_SYSTEM },
     {
@@ -140,9 +190,14 @@ ${turns.length === 1 ? "This is the learner's first answer. Decide: advance or f
   ];
 }
 
-function parseAssessResponse(raw) {
+interface AssessResult {
+  action: 'advance' | 'follow_up';
+  question?: string;
+}
+
+function parseAssessResponse(raw: string): AssessResult {
   try {
-    const obj = JSON.parse(raw);
+    const obj = JSON.parse(raw) as AssessResult;
     if (obj.action === 'follow_up' && typeof obj.question === 'string' && obj.question.trim()) {
       return { action: 'follow_up', question: obj.question.trim() };
     }
@@ -155,7 +210,7 @@ function parseAssessResponse(raw) {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.post('/api/assessment/start', (req, res) => {
+app.post('/api/assessment/start', (_req, res) => {
   const sessionId = newSessionId();
   const clientVerses = VERSES.map((v) => ({ ref: v.ref, text: v.text }));
   sessions.set(sessionId, { startedAt: Date.now(), answers: [] });
@@ -163,51 +218,57 @@ app.post('/api/assessment/start', (req, res) => {
   res.json({ sessionId, verses: clientVerses });
 });
 
+interface AnswerBody {
+  sessionId?: string;
+  verseIndex?: number;
+  turns?: Turn[];
+}
+
 app.post('/api/assessment/answer', async (req, res) => {
-  const { sessionId, verseIndex, turns } = req.body || {};
-  const session = sessions.get(sessionId);
+  const { sessionId, verseIndex, turns } = (req.body || {}) as AnswerBody;
+  const session = sessions.get(sessionId!);
   if (!session) return res.status(404).json({ error: 'unknown session' });
   if (typeof verseIndex !== 'number' || verseIndex < 0 || verseIndex >= VERSES.length) {
     return res.status(400).json({ error: 'bad verseIndex' });
   }
-  if (!Array.isArray(turns) || turns.length === 0) {
+  if (!Array.isArray(turns) || turns!.length === 0) {
     return res.status(400).json({ error: 'no turns' });
   }
 
   const verse = VERSES[verseIndex];
-  const userTurns = turns.filter((t) => t.role === 'user');
+  const userTurns = turns!.filter((t) => t.role === 'user');
 
-  let result;
+  let result: AssessResult;
   try {
     if (userTurns.length >= 2) {
       result = { action: 'advance' };
     } else {
-      const raw = await callDeepSeek(buildAssessMessages(verse, turns));
+      const raw = await callDeepSeek(buildAssessMessages(verse, turns!));
       result = raw ? parseAssessResponse(raw) : { action: 'advance' };
     }
   } catch (err) {
-    console.error('assess error:', err.message);
+    console.error('assess error:', (err as Error).message);
     result = { action: 'advance' };
   }
 
   if (result.action === 'advance') {
-    session.answers[verseIndex] = { ref: verse.ref, turns };
+    session.answers[verseIndex] = { ref: verse.ref, turns: turns! };
   }
-  logEvent({ type: 'assessment_turn', sessionId, verseIndex, ref: verse.ref, turns, result });
+  logEvent({ type: 'assessment_turn', sessionId: sessionId!, verseIndex, ref: verse.ref, turns: turns!, result });
   res.json(result);
 });
 
 app.post('/api/assessment/finish', (req, res) => {
-  const { sessionId } = req.body || {};
-  const session = sessions.get(sessionId);
+  const { sessionId } = (req.body || {}) as { sessionId?: string };
+  const session = sessions.get(sessionId!);
   if (!session) return res.status(404).json({ error: 'unknown session' });
-  logEvent({ type: 'assessment_finish', sessionId, answers: session.answers });
+  logEvent({ type: 'assessment_finish', sessionId: sessionId!, answers: session.answers });
   res.json({ ok: true });
 });
 
 app.post('/api/assessment/analyze', async (req, res) => {
-  const { sessionId } = req.body || {};
-  const session = findFinishedSession(sessionId);
+  const { sessionId } = (req.body || {}) as { sessionId?: string };
+  const session = findFinishedSession(sessionId!);
   if (!session) return res.status(404).json({ error: 'no finished session with that id' });
   if (!process.env.DEEPSEEK_API_KEY) {
     return res.status(503).json({ error: 'DEEPSEEK_API_KEY not set on the server' });
@@ -219,47 +280,94 @@ app.post('/api/assessment/analyze', async (req, res) => {
       verses: VERSES,
       apiKey: process.env.DEEPSEEK_API_KEY,
     });
-    applySnapshotToLedger(scores, sessionId);
-    sessions.delete(sessionId);
-    logEvent({ type: 'assessment_snapshot', sessionId, counts: {
-      solid: buckets.solid.length,
-      shaky: buckets.shaky.length,
-      unknown: buckets.unknown.length,
-      not_probed: buckets.not_probed.length,
-    } });
-    res.json({ buckets, totals: {
-      solid: buckets.solid.length,
-      shaky: buckets.shaky.length,
-      unknown: buckets.unknown.length,
-      not_probed: buckets.not_probed.length,
-      total: 50,
-    } });
+    applySnapshotToLedger(scores, sessionId!);
+    sessions.delete(sessionId!);
+    logEvent({
+      type: 'assessment_snapshot',
+      sessionId: sessionId!,
+      counts: {
+        solid: buckets.solid.length,
+        shaky: buckets.shaky.length,
+        unknown: buckets.unknown.length,
+        not_probed: buckets.not_probed.length,
+      },
+    });
+    res.json({
+      buckets,
+      totals: {
+        solid: buckets.solid.length,
+        shaky: buckets.shaky.length,
+        unknown: buckets.unknown.length,
+        not_probed: buckets.not_probed.length,
+        total: 50,
+      },
+    });
   } catch (err) {
     console.error('analyze error:', err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: (err as Error).message });
   }
 });
 
-app.get('/api/ledger', (req, res) => {
+app.get('/api/ledger', (_req, res) => {
   const ledger = readLedger();
   if (!ledger) return res.status(404).json({ error: 'no ledger yet — complete an assessment first' });
   res.json(ledger);
 });
 
-const skillById = new Map(taxonomy.skills.map((s) => [s.id, s]));
+interface SkillFromTaxonomy {
+  id: string;
+  category: string;
+  subcategory?: string;
+  internal_label: string;
+  user_facing_pattern: string;
+  semantic_note: string;
+  why_explanation: string;
+  prerequisites: string[];
+  difficulty: number;
+  examples: {
+    type: string;
+    ref: string;
+    text: string;
+    translation?: string;
+    highlight?: string;
+    root?: string;
+    note?: string;
+  }[];
+}
 
-function publicSkill(skill) {
+const skillById = new Map(taxonomy.skills.map((s) => [s.id, s as SkillFromTaxonomy]));
+
+interface PublicSkill {
+  id: string;
+  category: string;
+  subcategory?: string;
+  user_facing_pattern: string;
+  semantic_note: string;
+  why_explanation: string;
+  prerequisites: string[];
+  difficulty: number;
+  examples: SkillFromTaxonomy['examples'];
+}
+
+function publicSkill(skill: SkillFromTaxonomy | undefined): PublicSkill | null {
   if (!skill) return null;
-  const { internal_label, ...rest } = skill;
+  const { internal_label: _internal_label, ...rest } = skill;
   return rest;
 }
 
-function leadAnchor(skill) {
-  const ex = (skill.examples || []).find((e) => e.type === 'quranic') || skill.examples?.[0] || null;
+interface Anchor {
+  ref: string;
+  text: string;
+  highlight: string | null;
+}
+
+function leadAnchor(skill: SkillFromTaxonomy): Anchor | null {
+  const ex =
+    (skill.examples || []).find((e) => e.type === 'quranic') || skill.examples?.[0] || null;
   return ex ? { ref: ex.ref, text: ex.text, highlight: ex.highlight || null } : null;
 }
 
-function patternTeaser(skill, max = 100) {
+function patternTeaser(skill: SkillFromTaxonomy, max = 100): string {
   const s = (skill.user_facing_pattern || '').trim();
   if (s.length <= max) return s;
   const cut = s.slice(0, max);
@@ -267,19 +375,39 @@ function patternTeaser(skill, max = 100) {
   return cut.slice(0, lastSpace > 60 ? lastSpace : max) + '…';
 }
 
-const STATUS_PRIORITY = { unknown: 0, shaky: 1, learning: 2, solid: 3, not_probed: 4 };
-const STATUS_RANK = { not_probed: 0, unknown: 1, shaky: 2, learning: 3, solid: 4 };
+const STATUS_PRIORITY: Record<string, number> = {
+  unknown: 0,
+  shaky: 1,
+  learning: 2,
+  solid: 3,
+  not_probed: 4,
+};
+const STATUS_RANK: Record<string, number> = {
+  not_probed: 0,
+  unknown: 1,
+  shaky: 2,
+  learning: 3,
+  solid: 4,
+};
 
-const CATEGORY_LABELS = {
+const CATEGORY_LABELS: Record<string, string> = {
   verbal_morphology: 'Verbs',
   nominal_morphology: 'Nouns and plurals',
   syntax: 'Sentence structure',
 };
 
-app.get('/api/learn/queue', (req, res) => {
+app.get('/api/learn/queue', (_req, res) => {
   const ledger = readLedger();
   if (!ledger) return res.status(404).json({ error: 'no ledger yet — complete an assessment first' });
-  const items = [];
+  const items: {
+    id: string;
+    status: string;
+    teaser: string;
+    anchor: Anchor | null;
+    reviewCount: number;
+    evidence: string;
+    difficulty: number;
+  }[] = [];
   for (const [id, entry] of Object.entries(ledger.skills)) {
     if (entry.status !== 'unknown' && entry.status !== 'shaky') continue;
     const skill = skillById.get(id);
@@ -304,29 +432,55 @@ app.get('/api/learn/queue', (req, res) => {
   res.json({ items });
 });
 
-app.get('/api/library', (req, res) => {
+interface LibraryItem {
+  id: string;
+  status: string;
+  teaser: string;
+  anchor: Anchor | null;
+  reviewCount: number;
+  lastReviewedAt: string | null;
+  difficulty: number;
+}
+
+interface LibraryCategory {
+  id: string;
+  label: string;
+  skills: LibraryItem[];
+}
+
+app.get('/api/library', (_req, res) => {
   const ledger = readLedger();
   if (!ledger) return res.status(404).json({ error: 'no ledger yet — complete an assessment first' });
 
-  const counts = { solid: 0, learning: 0, shaky: 0, unknown: 0, not_probed: 0 };
-  const byCategory = new Map();
+  const counts: Record<string, number> = {
+    solid: 0,
+    learning: 0,
+    shaky: 0,
+    unknown: 0,
+    not_probed: 0,
+  };
+  const byCategory = new Map<string, LibraryItem[]>();
 
   for (const skill of taxonomy.skills) {
-    const entry = ledger.skills[skill.id] || { status: 'not_probed', reviewCount: 0, lastReviewedAt: null };
+    const entry = ledger.skills[skill.id] || {
+      status: 'not_probed',
+      reviewCount: 0,
+      lastReviewedAt: null,
+    };
     counts[entry.status] = (counts[entry.status] || 0) + 1;
 
-    const item = {
+    const item: LibraryItem = {
       id: skill.id,
       status: entry.status,
-      teaser: patternTeaser(skill, 90),
-      anchor: leadAnchor(skill),
+      teaser: patternTeaser(skill as SkillFromTaxonomy, 90),
+      anchor: leadAnchor(skill as SkillFromTaxonomy),
       reviewCount: entry.reviewCount || 0,
       lastReviewedAt: entry.lastReviewedAt || null,
       difficulty: skill.difficulty || 3,
     };
 
     if (!byCategory.has(skill.category)) byCategory.set(skill.category, []);
-    byCategory.get(skill.category).push(item);
+    byCategory.get(skill.category)!.push(item);
   }
 
   for (const arr of byCategory.values()) {
@@ -339,9 +493,9 @@ app.get('/api/library', (req, res) => {
   }
 
   const categoryOrder = ['verbal_morphology', 'nominal_morphology', 'syntax'];
-  const categories = categoryOrder
+  const categories: LibraryCategory[] = categoryOrder
     .filter((c) => byCategory.has(c))
-    .map((c) => ({ id: c, label: CATEGORY_LABELS[c] || c, skills: byCategory.get(c) }));
+    .map((c) => ({ id: c, label: CATEGORY_LABELS[c] || c, skills: byCategory.get(c)! }));
 
   res.json({ counts, total: taxonomy.skills.length, categories });
 });
@@ -355,7 +509,10 @@ app.get('/api/skill/:id', (req, res) => {
 });
 
 app.post('/api/learn/result', (req, res) => {
-  const { skillId, outcome } = req.body || {};
+  const { skillId, outcome } = (req.body || {}) as {
+    skillId?: string;
+    outcome?: 'got_it' | 'still_fuzzy';
+  };
   if (!skillId || !skillById.has(skillId)) {
     return res.status(400).json({ error: 'unknown skillId' });
   }
@@ -363,10 +520,18 @@ app.post('/api/learn/result', (req, res) => {
     return res.status(400).json({ error: 'outcome must be "got_it" or "still_fuzzy"' });
   }
   const ledger = readLedger() || { version: 1, skills: {} };
-  const prev = ledger.skills[skillId] || { status: 'unknown', evidence: '', source: 'manual', reviewCount: 0 };
-  const nextStatus = outcome === 'got_it'
-    ? (STATUS_RANK[prev.status] >= STATUS_RANK.learning ? prev.status : 'learning')
-    : prev.status;
+  const prev = ledger.skills[skillId] || {
+    status: 'unknown',
+    evidence: '',
+    source: 'manual',
+    reviewCount: 0,
+  };
+  const nextStatus =
+    outcome === 'got_it'
+      ? STATUS_RANK[prev.status] >= STATUS_RANK.learning
+        ? prev.status
+        : 'learning'
+      : prev.status;
   ledger.skills[skillId] = {
     ...prev,
     status: nextStatus,
@@ -374,13 +539,21 @@ app.post('/api/learn/result', (req, res) => {
     reviewCount: (prev.reviewCount || 0) + 1,
   };
   writeLedger(ledger);
-  logEvent({ type: 'lesson_result', skillId, outcome, prevStatus: prev.status, newStatus: nextStatus });
+  logEvent({
+    type: 'lesson_result',
+    skillId,
+    outcome,
+    prevStatus: prev.status,
+    newStatus: nextStatus,
+  });
   res.json({ ok: true, status: nextStatus });
 });
 
 app.listen(PORT, () => {
   console.log(`Sabir running at http://localhost:${PORT}`);
   if (!process.env.DEEPSEEK_API_KEY) {
-    console.log('  (DEEPSEEK_API_KEY not set — assessments run in stub mode: no follow-ups, no analysis)');
+    console.log(
+      '  (DEEPSEEK_API_KEY not set — assessments run in stub mode: no follow-ups, no analysis)',
+    );
   }
 });

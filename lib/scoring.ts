@@ -1,4 +1,91 @@
-function buildSessionDigest(session) {
+export interface Turn {
+  role: 'user' | 'tutor';
+  text: string;
+}
+
+export interface SessionAnswer {
+  ref: string;
+  turns: Turn[];
+}
+
+export interface Session {
+  type: 'assessment_finish';
+  sessionId: string;
+  ts: string;
+  answers: (SessionAnswer | undefined)[];
+}
+
+export interface Skill {
+  id: string;
+  category: string;
+  subcategory?: string;
+  internal_label: string;
+  user_facing_pattern: string;
+  semantic_note: string;
+  why_explanation: string;
+  prerequisites: string[];
+  difficulty: number;
+  examples: SkillExample[];
+}
+
+export interface SkillExample {
+  type: string;
+  ref: string;
+  text: string;
+  translation: string;
+  highlight?: string;
+  root?: string;
+  note?: string;
+}
+
+export interface Taxonomy {
+  version: number;
+  note: string;
+  skills: Skill[];
+}
+
+export interface Verse {
+  ref: string;
+  text: string;
+  translation: string;
+  probes: string[];
+}
+
+export interface ProbeEntry {
+  ref: string;
+  verseText: string;
+  word: string | null;
+}
+
+export interface ProbedSkill {
+  id: string;
+  label: string;
+  summary: string;
+  probes: ProbeEntry[];
+}
+
+export interface ScoreEntry {
+  status: 'solid' | 'shaky' | 'unknown' | 'not_probed';
+  evidence: string;
+  source: 'probed' | 'probed_missing' | 'incidental' | 'not_probed';
+}
+
+export type Scores = Record<string, ScoreEntry>;
+
+export interface BucketItem {
+  id: string;
+  evidence: string;
+  source: string;
+}
+
+export interface Buckets {
+  solid: BucketItem[];
+  shaky: BucketItem[];
+  unknown: BucketItem[];
+  not_probed: BucketItem[];
+}
+
+function buildSessionDigest(session: Session): string {
   return session.answers
     .map((a, i) => {
       if (!a) return `[Verse ${i + 1}] no answer recorded`;
@@ -8,9 +95,9 @@ function buildSessionDigest(session) {
     .join('\n\n');
 }
 
-function buildAnchors(taxonomy, verses) {
+function buildAnchors(taxonomy: Taxonomy, verses: Verse[]): Map<string, ProbedSkill> {
   const skillById = new Map(taxonomy.skills.map((s) => [s.id, s]));
-  const probedSkills = new Map();
+  const probedSkills = new Map<string, ProbedSkill>();
 
   for (const v of verses) {
     for (const skillId of v.probes || []) {
@@ -24,11 +111,13 @@ function buildAnchors(taxonomy, verses) {
           probes: [],
         });
       }
-      const matchingExample = (skill.examples || []).find((ex) => ex.type === 'quranic' && ex.ref === v.ref);
-      probedSkills.get(skillId).probes.push({
+      const matchingExample = (skill.examples || []).find(
+        (ex) => ex.type === 'quranic' && ex.ref === v.ref,
+      );
+      probedSkills.get(skillId)!.probes.push({
         ref: v.ref,
         verseText: v.text,
-        word: matchingExample?.highlight || null,
+        word: matchingExample?.highlight ?? null,
       });
     }
   }
@@ -65,10 +154,13 @@ Output STRICT JSON only:
 
 "probed" must contain every probed skill exactly once. "incidental" is optional — use it if you spot clear evidence (positive or negative) for a skill that wasn't explicitly probed.`;
 
-function buildUserPrompt(probedSkills, digest) {
+function buildUserPrompt(probedSkills: Map<string, ProbedSkill>, digest: string): string {
   const skillBlocks = [...probedSkills.values()].map((s) => {
     const probeLines = s.probes
-      .map((p) => `    - Verse ${p.ref}: anchor word = ${p.word || '(no anchor identified — use the verse text)'}\n      verse text: ${p.verseText.replace(/\s+/g, ' ').slice(0, 200)}`)
+      .map(
+        (p) =>
+          `    - Verse ${p.ref}: anchor word = ${p.word || '(no anchor identified — use the verse text)'}\n      verse text: ${p.verseText.replace(/\s+/g, ' ').slice(0, 200)}`,
+      )
       .join('\n');
     return `${s.id} — ${s.label}
   what it tests: ${s.summary}
@@ -86,7 +178,10 @@ ${digest}
 Score every probed skill. Add incidental scores only when there is clear evidence. Output the JSON object now.`;
 }
 
-async function callDeepSeek(messages, apiKey) {
+async function callDeepSeek(
+  messages: { role: string; content: string }[],
+  apiKey: string,
+): Promise<string> {
   if (!apiKey) throw new Error('DEEPSEEK_API_KEY not set');
   const res = await fetch('https://api.deepseek.com/chat/completions', {
     method: 'POST',
@@ -105,19 +200,32 @@ async function callDeepSeek(messages, apiKey) {
     const text = await res.text();
     throw new Error(`DeepSeek ${res.status}: ${text}`);
   }
-  const data = await res.json();
+  const data = (await res.json()) as { choices: [{ message: { content: string } }] };
   return data.choices[0].message.content;
 }
 
-function mergeScores(probed, incidental, allSkillIds, probedIds) {
-  const out = {};
+function mergeScores(
+  probed: Record<string, ScoreEntry>,
+  incidental: Record<string, ScoreEntry> | undefined,
+  allSkillIds: string[],
+  probedIds: Set<string>,
+): Scores {
+  const out: Scores = {};
   for (const id of allSkillIds) {
     if (probedIds.has(id)) {
       out[id] = probed[id]
         ? { status: probed[id].status, evidence: probed[id].evidence || '', source: 'probed' }
-        : { status: 'unknown', evidence: '(model omitted score — defaulted to unknown)', source: 'probed_missing' };
+        : {
+            status: 'unknown',
+            evidence: '(model omitted score — defaulted to unknown)',
+            source: 'probed_missing',
+          };
     } else if (incidental && incidental[id]) {
-      out[id] = { status: incidental[id].status, evidence: incidental[id].evidence || '', source: 'incidental' };
+      out[id] = {
+        status: incidental[id].status,
+        evidence: incidental[id].evidence || '',
+        source: 'incidental',
+      };
     } else {
       out[id] = { status: 'not_probed', evidence: '', source: 'not_probed' };
     }
@@ -125,15 +233,31 @@ function mergeScores(probed, incidental, allSkillIds, probedIds) {
   return out;
 }
 
-function bucketize(scores) {
-  const buckets = { solid: [], shaky: [], unknown: [], not_probed: [] };
+export function bucketize(scores: Scores): Buckets {
+  const buckets: Buckets = { solid: [], shaky: [], unknown: [], not_probed: [] };
   for (const [id, r] of Object.entries(scores)) {
     buckets[r.status].push({ id, evidence: r.evidence, source: r.source });
   }
   return buckets;
 }
 
-async function scoreSession({ session, taxonomy, verses, apiKey }) {
+export interface ScoreSessionInput {
+  session: Session;
+  taxonomy: Taxonomy;
+  verses: Verse[];
+  apiKey: string;
+}
+
+export async function scoreSession({
+  session,
+  taxonomy,
+  verses,
+  apiKey,
+}: ScoreSessionInput): Promise<{
+  scores: Scores;
+  buckets: Buckets;
+  probedIds: string[];
+}> {
   const probedSkills = buildAnchors(taxonomy, verses);
   const probedIds = new Set(probedSkills.keys());
   const allSkillIds = taxonomy.skills.map((s) => s.id);
@@ -143,10 +267,10 @@ async function scoreSession({ session, taxonomy, verses, apiKey }) {
     { role: 'user', content: buildUserPrompt(probedSkills, digest) },
   ];
   const raw = await callDeepSeek(messages, apiKey);
-  let parsed;
+  let parsed: { probed: Record<string, ScoreEntry>; incidental?: Record<string, ScoreEntry> };
   try {
     parsed = JSON.parse(raw);
-  } catch (e) {
+  } catch {
     throw new Error(`Could not parse model output as JSON: ${raw}`);
   }
   if (!parsed.probed) {
@@ -155,5 +279,3 @@ async function scoreSession({ session, taxonomy, verses, apiKey }) {
   const scores = mergeScores(parsed.probed, parsed.incidental || {}, allSkillIds, probedIds);
   return { scores, buckets: bucketize(scores), probedIds: [...probedIds] };
 }
-
-module.exports = { scoreSession, bucketize };
