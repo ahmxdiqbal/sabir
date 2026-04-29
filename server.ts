@@ -546,6 +546,80 @@ app.post('/api/learn/result', (req, res) => {
   res.json({ ok: true, status: nextStatus });
 });
 
+const CHAT_SYSTEM = `You are a patient Arabic tutor helping a learner understand a specific grammar pattern from Quranic Arabic. The learner is studying informally and has weak formal grammar knowledge.
+
+Rules:
+- Use plain English. Never use grammatical jargon (no "verb form," "tense," "case," "particle," "noun," "subject," "object," "passive," "active," "imperfective," "perfective," "participle," "masdar," "definite," "indefinite," "vocative").
+- Keep answers short — 2-4 sentences unless they ask for more detail.
+- Refer to the specific examples provided in the lesson context.
+- If they ask about a word or shape, point to the actual Arabic text in the examples.
+- Theological care: when discussing Quranic verses, do not phrase explanations in ways that ascribe agency to subjects in conflict with the verse's meaning. Be neutral about agency.
+- Encourage the learner. Answer follow-ups naturally.`;
+
+async function callDeepSeekChat(messages: { role: string; content: string }[]): Promise<string> {
+  const key = process.env.DEEPSEEK_API_KEY;
+  if (!key) throw new Error('DEEPSEEK_API_KEY not set');
+  const res = await fetch('https://api.deepseek.com/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${key}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: process.env.DEEPSEEK_MODEL || 'deepseek-v4-pro',
+      messages,
+      temperature: 0.5,
+    }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`DeepSeek ${res.status}: ${text}`);
+  }
+  const data = (await res.json()) as { choices: [{ message: { content: string } }] };
+  return data.choices[0].message.content;
+}
+
+app.post('/api/chat', async (req, res) => {
+  if (!process.env.DEEPSEEK_API_KEY) {
+    return res.status(503).json({ error: 'DEEPSEEK_API_KEY not set on the server' });
+  }
+  const { messages, lessonContext } = (req.body || {}) as {
+    messages?: { role: string; text: string }[];
+    lessonContext?: { pattern: string; meaning: string; why: string; examples: { ref: string; text: string; translation: string; highlight?: string; note?: string }[] };
+  };
+  if (!Array.isArray(messages) || !messages.length) {
+    return res.status(400).json({ error: 'no messages' });
+  }
+
+  try {
+    const systemMessages: { role: string; content: string }[] = [
+      { role: 'system', content: CHAT_SYSTEM },
+    ];
+    if (lessonContext) {
+      const examplesBlock = lessonContext.examples
+        .map((e) => `  - ${e.ref}: ${e.text}${e.translation ? ' (' + e.translation + ')' : ''}${e.highlight ? ' [highlight: ' + e.highlight + ']' : ''}${e.note ? ' ' + e.note : ''}`)
+        .join('\n');
+      systemMessages.push({
+        role: 'system',
+        content: `LESSON CONTEXT:
+Pattern: ${lessonContext.pattern}
+Meaning: ${lessonContext.meaning}
+Why it matters: ${lessonContext.why}
+Examples:
+${examplesBlock}`,
+      });
+    }
+    const reply = await callDeepSeekChat([
+      ...systemMessages,
+      ...messages.map((m) => ({ role: m.role, content: m.text })),
+    ]);
+    res.json({ reply });
+  } catch (err) {
+    console.error('chat error:', err);
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Sabir running at http://localhost:${PORT}`);
   if (!process.env.DEEPSEEK_API_KEY) {

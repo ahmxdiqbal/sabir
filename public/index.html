@@ -92,13 +92,24 @@
         <a href="#" id="back-to-dashboard" class="link">← lessons</a>
         <span id="lesson-status" class="status-pill"></span>
       </div>
-      <p class="lesson-pattern" id="lesson-pattern"></p>
-      <p class="lesson-meaning" id="lesson-meaning"></p>
-      <div id="lesson-examples" class="examples"></div>
-      <p class="lesson-why" id="lesson-why"></p>
-      <div class="screen-actions">
-        <button id="result-fuzzy" class="secondary">Still fuzzy</button>
-        <button id="result-got-it" class="primary">I get it</button>
+      <div class="lesson-body">
+        <div class="lesson-content">
+          <p class="lesson-pattern" id="lesson-pattern"></p>
+          <p class="lesson-meaning" id="lesson-meaning"></p>
+          <div id="lesson-examples" class="examples"></div>
+          <p class="lesson-why" id="lesson-why"></p>
+          <div class="screen-actions">
+            <button id="result-fuzzy" class="secondary">Still fuzzy</button>
+            <button id="result-got-it" class="primary">I get it</button>
+          </div>
+        </div>
+        <div class="lesson-chat">
+          <div id="chat-messages" class="chat-messages"></div>
+          <div class="chat-input-row">
+            <textarea id="chat-input" placeholder="Ask about this pattern…" rows="2"></textarea>
+            <button id="chat-send" class="primary">Send</button>
+          </div>
+        </div>
       </div>
     </section>
 

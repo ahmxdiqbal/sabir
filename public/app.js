@@ -400,6 +400,7 @@
         for (const ex of skill.examples || []) {
             exEl.appendChild(buildExample(ex));
         }
+        initChat(skill);
     }
     function buildExample(ex) {
         const wrap = document.createElement('div');
@@ -441,6 +442,100 @@
         }
         return wrap;
     }
+    let chatMessages = [];
+    let chatContextSent = false;
+    let currentLessonSkill = null;
+    function initChat(skill) {
+        currentLessonSkill = skill;
+        chatMessages = [];
+        chatContextSent = false;
+        const msgEl = document.getElementById('chat-messages');
+        msgEl.innerHTML = '';
+        document.getElementById('chat-input').value = '';
+        document.getElementById('chat-send').disabled = false;
+    }
+    function renderChatMessages() {
+        const msgEl = document.getElementById('chat-messages');
+        msgEl.innerHTML = '';
+        for (const msg of chatMessages) {
+            const div = document.createElement('div');
+            div.className = `chat-message ${msg.role}${msg.error ? ' error' : ''}`;
+            div.textContent = msg.text;
+            msgEl.appendChild(div);
+        }
+        msgEl.scrollTop = msgEl.scrollHeight;
+    }
+    async function sendChatMessage(text) {
+        if (!text.trim())
+            return;
+        const sendBtn = document.getElementById('chat-send');
+        const input = document.getElementById('chat-input');
+        sendBtn.disabled = true;
+        input.disabled = true;
+        chatMessages.push({ role: 'user', text: text.trim() });
+        renderChatMessages();
+        input.value = '';
+        const thinking = { role: 'tutor', text: '…' };
+        chatMessages.push(thinking);
+        renderChatMessages();
+        try {
+            const body = {
+                messages: chatMessages.filter((m) => m !== thinking),
+            };
+            if (!chatContextSent && currentLessonSkill) {
+                body.lessonContext = {
+                    pattern: currentLessonSkill.user_facing_pattern,
+                    meaning: currentLessonSkill.semantic_note,
+                    why: currentLessonSkill.why_explanation,
+                    examples: (currentLessonSkill.examples || []).map((e) => ({
+                        ref: e.ref,
+                        text: e.text,
+                        translation: e.translation,
+                        highlight: e.highlight,
+                        note: e.note,
+                    })),
+                };
+                chatContextSent = true;
+            }
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+            if (!res.ok)
+                throw new Error(`chat: ${res.status}`);
+            const data = (await res.json());
+            chatMessages.pop();
+            chatMessages.push({ role: 'tutor', text: data.reply });
+            renderChatMessages();
+        }
+        catch (err) {
+            chatMessages.pop();
+            chatMessages.push({
+                role: 'tutor',
+                text: `Sorry, something went wrong: ${err.message}`,
+                error: true,
+            });
+            renderChatMessages();
+        }
+        finally {
+            sendBtn.disabled = false;
+            input.disabled = false;
+            input.focus();
+        }
+    }
+    document.getElementById('chat-send').addEventListener('click', () => {
+        sendChatMessage(document.getElementById('chat-input').value);
+    });
+    (() => {
+        const input = document.getElementById('chat-input');
+        input.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                e.preventDefault();
+                sendChatMessage(input.value);
+            }
+        });
+    })();
     document.getElementById('back-to-dashboard').addEventListener('click', (e) => {
         e.preventDefault();
         loadDashboard();

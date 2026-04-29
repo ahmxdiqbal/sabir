@@ -535,6 +535,8 @@
     for (const ex of skill.examples || []) {
       exEl.appendChild(buildExample(ex));
     }
+
+    initChat(skill);
   }
 
   function buildExample(ex: SkillExample): HTMLElement {
@@ -588,6 +590,113 @@
     }
     return wrap;
   }
+
+  // ── Chat ───────────────────────────────────────────────────────────────────
+  interface ChatMessage {
+    role: 'user' | 'tutor';
+    text: string;
+    error?: boolean;
+  }
+
+  let chatMessages: ChatMessage[] = [];
+  let chatContextSent = false;
+  let currentLessonSkill: SkillDetail | null = null;
+
+  function initChat(skill: SkillDetail): void {
+    currentLessonSkill = skill;
+    chatMessages = [];
+    chatContextSent = false;
+    const msgEl = document.getElementById('chat-messages')!;
+    msgEl.innerHTML = '';
+    (document.getElementById('chat-input') as HTMLTextAreaElement).value = '';
+    (document.getElementById('chat-send') as HTMLButtonElement).disabled = false;
+  }
+
+  function renderChatMessages(): void {
+    const msgEl = document.getElementById('chat-messages')!;
+    msgEl.innerHTML = '';
+    for (const msg of chatMessages) {
+      const div = document.createElement('div');
+      div.className = `chat-message ${msg.role}${msg.error ? ' error' : ''}`;
+      div.textContent = msg.text;
+      msgEl.appendChild(div);
+    }
+    msgEl.scrollTop = msgEl.scrollHeight;
+  }
+
+  async function sendChatMessage(text: string): Promise<void> {
+    if (!text.trim()) return;
+    const sendBtn = document.getElementById('chat-send') as HTMLButtonElement;
+    const input = document.getElementById('chat-input') as HTMLTextAreaElement;
+    sendBtn.disabled = true;
+    input.disabled = true;
+
+    chatMessages.push({ role: 'user', text: text.trim() });
+    renderChatMessages();
+    input.value = '';
+
+    const thinking: ChatMessage = { role: 'tutor', text: '…' };
+    chatMessages.push(thinking);
+    renderChatMessages();
+
+    try {
+      const body: Record<string, unknown> = {
+        messages: chatMessages.filter((m) => m !== thinking),
+      };
+      if (!chatContextSent && currentLessonSkill) {
+        body.lessonContext = {
+          pattern: currentLessonSkill.user_facing_pattern,
+          meaning: currentLessonSkill.semantic_note,
+          why: currentLessonSkill.why_explanation,
+          examples: (currentLessonSkill.examples || []).map((e) => ({
+            ref: e.ref,
+            text: e.text,
+            translation: e.translation,
+            highlight: e.highlight,
+            note: e.note,
+          })),
+        };
+        chatContextSent = true;
+      }
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(`chat: ${res.status}`);
+      const data = (await res.json()) as { reply: string };
+
+      chatMessages.pop();
+      chatMessages.push({ role: 'tutor', text: data.reply });
+      renderChatMessages();
+    } catch (err) {
+      chatMessages.pop();
+      chatMessages.push({
+        role: 'tutor',
+        text: `Sorry, something went wrong: ${(err as Error).message}`,
+        error: true,
+      });
+      renderChatMessages();
+    } finally {
+      sendBtn.disabled = false;
+      input.disabled = false;
+      input.focus();
+    }
+  }
+
+  (document.getElementById('chat-send') as HTMLButtonElement).addEventListener('click', () => {
+    sendChatMessage((document.getElementById('chat-input') as HTMLTextAreaElement).value);
+  });
+
+  (() => {
+    const input = document.getElementById('chat-input') as HTMLTextAreaElement;
+    input.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        sendChatMessage(input.value);
+      }
+    });
+  })();
 
   (document.getElementById('back-to-dashboard') as HTMLAnchorElement).addEventListener(
     'click',

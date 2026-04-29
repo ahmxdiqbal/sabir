@@ -506,7 +506,7 @@ hr {
 
 /* ── Lesson ── */
 #lesson {
-  max-width: 640px;
+  max-width: 1100px;
   margin: 0 auto;
   text-align: left;
 }
@@ -516,6 +516,19 @@ hr {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 2.5rem;
+}
+
+#lesson-status { display: none; }
+
+.lesson-body {
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+}
+
+.lesson-content {
+  flex: 1;
+  min-width: 0;
 }
 
 .lesson-pattern {
@@ -591,6 +604,93 @@ hr {
   margin-top: 2rem;
   padding-top: 1.5rem;
   border-top: 1px solid #e5e3dc;
+}
+
+/* ── Lesson chat ── */
+.lesson-chat {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  height: 320px;
+  overflow-y: auto;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  border: 1px solid #d4d2cc;
+  border-radius: 8px;
+  background: #fdfdfc;
+}
+
+.chat-message {
+  max-width: 88%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.chat-message.tutor {
+  align-self: flex-start;
+  background: #f3f1ea;
+  color: #1a1a1a;
+  border-bottom-left-radius: 2px;
+}
+
+.chat-message.user {
+  align-self: flex-end;
+  background: #1a1a1a;
+  color: #fafaf7;
+  border-bottom-right-radius: 2px;
+}
+
+.chat-message.error {
+  align-self: flex-start;
+  background: #f4dcd9;
+  color: #6b2a23;
+  font-style: italic;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 0.625rem;
+}
+
+.chat-input-row textarea {
+  flex: 1;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.625rem;
+  font-size: 0.8125rem;
+  resize: none;
+}
+
+.chat-input-row button {
+  flex-shrink: 0;
+  align-self: stretch;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+}
+
+.chat-input-row button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 800px) {
+  .lesson-body {
+    flex-direction: column;
+  }
+  .lesson-chat {
+    width: 100%;
+  }
+  .chat-messages {
+    height: 260px;
+  }
 }
 
 /* ── Lesson done ── */
