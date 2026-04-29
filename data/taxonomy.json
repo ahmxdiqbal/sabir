@@ -50,7 +50,8 @@
           "root": "ش-ر-ب",
           "note": "Sound root, a-i pattern (شَرِبَ). Form I across all of Arabic — Quranic and modern. The same word the Quran uses for drinking."
         }
-      ]
+      ],
+      "card_label": "Past verb"
     },
     {
       "id": "verb_form_II_perfective_sound",
@@ -101,7 +102,8 @@
           "root": "د-ر-س",
           "note": "Form I دَرَسَ = 'he studied.' Form II دَرَّسَ = 'he caused [others] to study' = taught. Pure causative."
         }
-      ]
+      ],
+      "card_label": "Past verb: causing"
     },
     {
       "id": "verb_form_III_perfective_sound",
@@ -152,7 +154,8 @@
           "root": "ق-ب-ل",
           "note": "Form I قَبِلَ = 'accepted.' Form III قابَلَ = 'met, faced, encountered' — engaged with another person face-to-face. The directed-at-recipient quality is sharp here."
         }
-      ]
+      ],
+      "card_label": "Past verb: toward"
     },
     {
       "id": "verb_form_IV_perfective_sound",
@@ -203,7 +206,8 @@
           "root": "ر-س-ل",
           "note": "Same Form IV, modern usage. The father is the causer — he made the sending happen."
         }
-      ]
+      ],
+      "card_label": "Past verb: making"
     },
     {
       "id": "verb_form_V_perfective_sound",
@@ -254,7 +258,8 @@
           "root": "ع-ل-م",
           "note": "The cleanest illustration of the II/V pair. Form II عَلَّمَ = taught. Form V تَعَلَّمَ = learned. Same root, same doubled middle, just تَ added — and the action turns from outward (teaching) to inward (learning)."
         }
-      ]
+      ],
+      "card_label": "Past verb: on oneself"
     },
     {
       "id": "verb_form_VI_perfective_sound",
@@ -304,7 +309,8 @@
           "root": "ع-و-ن",
           "note": "Form III عَاوَنَ = 'helped [someone].' Form VI تَعَاوَنَ = 'helped each other, cooperated.' Mutual."
         }
-      ]
+      ],
+      "card_label": "Past verb: mutual"
     },
     {
       "id": "verb_form_VII_perfective_sound",
@@ -355,7 +361,8 @@
           "root": "ك-س-ر",
           "note": "Form I كَسَرَ = 'he broke [it].' Form VII ٱنْكَسَرَ = 'it broke' — became broken, with the agent unnamed. Compare to English: 'The pen broke' versus 'Someone broke the pen.' Same difference."
         }
-      ]
+      ],
+      "card_label": "Past verb: it happened"
     },
     {
       "id": "verb_form_VIII_perfective_sound",
@@ -406,7 +413,8 @@
           "root": "ج-م-ع",
           "note": "From جمع (he gathered something — Form I, transitive). Form VIII اجتمع = they gathered themselves together. The action turns back on the doer."
         }
-      ]
+      ],
+      "card_label": "Past verb: self-doing"
     },
     {
       "id": "verb_form_X_perfective_sound",
@@ -457,7 +465,8 @@
           "root": "خ-ر-ج",
           "note": "Form I خَرَجَ = 'went out.' Form X ٱسْتَخْرَجَ = 'sought to make come out, extracted.' The seeking sense applied to a physical action — pulling water out."
         }
-      ]
+      ],
+      "card_label": "Past verb: seeking"
     },
     {
       "id": "broken_plural_afaal",
@@ -508,7 +517,8 @@
           "root": "ي-و-م",
           "note": "Same أَيَّام as the Quranic example, used the same way in modern Arabic. The pattern doesn't belong to one register — it's the default plural for يوم across all Arabic."
         }
-      ]
+      ],
+      "card_label": "Broken plural"
     },
     {
       "id": "idafa_basic",
@@ -555,7 +565,8 @@
           "highlight": "كِتابُ الطّالِبِ",
           "note": "كتاب is bare; الطالب carries the kasra. 'Book of the student.' Same structure as the Quranic examples, modern wording."
         }
-      ]
+      ],
+      "card_label": "Linked nouns"
     },
     {
       "id": "verb_form_I_imperfective_sound",
@@ -606,7 +617,8 @@
           "root": "ك-ت-ب",
           "note": "Root كتب (writing). Form I past كَتَبَ = 'he wrote.' Present-tense shape يَكْتُبُ — يـ prefix, sukun on the first root letter ك, damma on the middle root letter ت, damma at the end. The damma at the end is the default ending when nothing else is acting on the verb."
         }
-      ]
+      ],
+      "card_label": "Present verb"
     },
     {
       "id": "verb_form_II_imperfective_sound",
@@ -658,7 +670,8 @@
           "root": "ع-ل-م",
           "note": "Root علم (knowing). Form I يَعْلَمُ = 'he knows.' Form II يُعَلِّمُ = 'he teaches' — literally 'he causes to know.' Notice how the damma on the يـ and the shadda on the middle root letter ل turn 'knowing' into 'making someone else know.' Same root, same three letters, but the doubled middle root letter pushes the action onto a recipient."
         }
-      ]
+      ],
+      "card_label": "Present verb: causing"
     },
     {
       "id": "verb_form_IV_imperfective_sound",
@@ -711,7 +724,8 @@
           "root": "ر-س-ل",
           "note": "Same root as the 7:57 example. Form IV shape يُرْسِلُ — damma on the يـ, sukun on ر, kasra on the middle root letter س, no shadda. Compare visually with Form II يُسَبِّحُ from earlier: same damma on the prefix, but Form II has the shadda that Form IV does not."
         }
-      ]
+      ],
+      "card_label": "Present verb: making"
     },
     {
       "id": "verb_form_VIII_imperfective_sound",
@@ -763,7 +777,8 @@
           "root": "ج-م-ع",
           "note": "Root جمع (gathering). Form I جَمَعَ = 'he gathered something' (transitive — gathered objects together). Form VIII present-tense shape يَجْتَمِعُ — fatha on the يـ, first root letter ج with sukun, wedged ت with a fatha, second root letter م with a kasra, third root letter ع. The action turns back on the doers themselves: they gather themselves together."
         }
-      ]
+      ],
+      "card_label": "Present: self-doing"
     },
     {
       "id": "verb_form_X_imperfective_sound",
@@ -815,7 +830,8 @@
           "root": "خ-ر-ج",
           "note": "Root خرج (going out). Form I يَخْرُجُ = 'goes out.' Form IV يُخْرِجُ = 'brings out.' Form X يَسْتَخْرِجُ — present-tense shape with fatha on the يـ, then the سْتَ chunk, then the root letters with a kasra on the middle root letter ر — adds the 'seeking out' sense: actively pulls/extracts. Notice how the same root sits inside three different shapes (Form I, Form IV, Form X) and the meaning shifts each time."
         }
-      ]
+      ],
+      "card_label": "Present verb: seeking"
     },
     {
       "id": "active_participle_form_I",
@@ -866,7 +882,8 @@
           "root": "ك-ت-ب",
           "note": "Root كتب (writing). Form I كَتَبَ = he wrote. Pour the root into the فَاعِل shape: كَاتِب = a writer, the one who writes. The same template you saw above with عَالِم and فَاطِر — only the root letters change."
         }
-      ]
+      ],
+      "card_label": "Doer noun"
     },
     {
       "id": "active_participle_form_II",
@@ -917,7 +934,8 @@
           "root": "ع-ل-م",
           "note": "Same root as عَالِم above (knowing). Form I عَلِمَ = he knew. Form II عَلَّمَ = he taught (caused someone to know — note the doubled middle). The participle مُعَلِّم = the one teaching, a teacher. Compare: عَالِم (Form I shape) is 'a knower'; مُعَلِّم (Form II shape) is 'a teacher.' Same root, two different doer-shapes for two different actions built from it."
         }
-      ]
+      ],
+      "card_label": "Doer noun: causing"
     },
     {
       "id": "active_participle_form_IV",
@@ -968,7 +986,8 @@
           "root": "س-ل-م",
           "note": "Root سلم (peace, soundness, surrender). Form IV أَسْلَمَ = he submitted, gave himself over. The participle مُسْلِم = the one submitting, a Muslim. Same shape as مُؤْمِن and مُنْذِر above: مُ at the start, sukun on the first root letter, kasra under the second. Once you see the شكل, you can read 'doer of the Form IV action' off any root."
         }
-      ]
+      ],
+      "card_label": "Doer noun: making"
     },
     {
       "id": "active_participle_form_VIII",
@@ -1019,7 +1038,8 @@
           "root": "ق-ر-ب",
           "note": "Root قرب (nearness). Form VIII اِقْتَرَبَ = it drew near (the event of becoming-near). The participle مُقْتَرِب = drawing near, in the state of approach. Same template as مُجْتَمِع and مُخْتَلِف: مُ at the front, ت wedged after the first root letter, kasra under the second. The Form VIII flavor — describing the state of approach rather than naming who brings it about — carries straight into the participle."
         }
-      ]
+      ],
+      "card_label": "Doer noun: self"
     },
     {
       "id": "passive_participle_form_I",
@@ -1071,7 +1091,8 @@
           "root": "ك-ت-ب",
           "note": "Root كتب (writing). Form I كَتَبَ = he wrote. The doer-shape كَاتِب is a writer; the receiver-shape مَكْتُوب is the thing written. Same root, two mirror shapes — one names who does, one names what is done to. مَ at the start, sukun on ك, long و between ت and ب: the مَفْعُول template carries straight across from Quranic to modern Arabic."
         }
-      ]
+      ],
+      "card_label": "Done-to noun"
     },
     {
       "id": "masdar_form_II",
@@ -1122,7 +1143,8 @@
           "root": "ع-ل-م",
           "note": "From عَلَّمَ ('he taught' — Form II). تَعْلِيم is the act of teaching turned into a noun, working here as the subject of the sentence. Same shape (تَفْعِيل) as تَنْزِيل and تَطْهِير above."
         }
-      ]
+      ],
+      "card_label": "Action noun: causing"
     },
     {
       "id": "masdar_form_IV",
@@ -1173,7 +1195,8 @@
           "root": "ر-س-ل",
           "note": "From أَرْسَلَ ('he sent' — Form IV). إِرْسَال is the act of sending as a noun, working here as the subject. Same shape (إِفْعَال) as إِسْلَام and إِيمَان above — alif-kasra at the start, long ا before the final root letter."
         }
-      ]
+      ],
+      "card_label": "Action noun: making"
     },
     {
       "id": "masdar_form_VIII",
@@ -1224,7 +1247,8 @@
           "root": "ج-م-ع",
           "note": "From اِجْتَمَعَ ('they gathered' — Form VIII). اِجْتِمَاع is the gathering as a noun, working here as the subject. Same shape (اِفْتِعَال) as اِخْتِلَاف and اِبْتِغَاء above."
         }
-      ]
+      ],
+      "card_label": "Action noun: self"
     },
     {
       "id": "masdar_form_X",
@@ -1275,7 +1299,8 @@
           "root": "خ-ر-ج",
           "note": "From اِسْتَخْرَجَ ('he extracted, drew out' — Form X). اِسْتِخْرَاج is the act of extracting as a noun, working here as the subject. Same shape (اِسْتِفْعَال) as اِسْتِغْفَار and اِسْتِكْبَار above."
         }
-      ]
+      ],
+      "card_label": "Action noun: seeking"
     },
     {
       "id": "broken_plural_fuul",
@@ -1325,7 +1350,8 @@
           "root": "ب-ي-ت",
           "note": "Singular بَيْت (house) → many-form بُيُوت (houses). Same fu-3uul mold as قُلُوب and صُدُور and نُجُوم: the three root letters with damma, then damma and long و, then the last letter."
         }
-      ]
+      ],
+      "card_label": "Broken plural"
     },
     {
       "id": "broken_plural_fial",
@@ -1375,7 +1401,8 @@
           "root": "ك-ب-ر",
           "note": "Singular كَبِير (big, old) → many-form كِبَار. Same fi-3aal mold: kasra on ك, fatha and long ا between ب and ر. Both الرِّجَالُ and الكِبَارُ in this sentence sit in the same mold — the adjective shifts to match the noun's many-form."
         }
-      ]
+      ],
+      "card_label": "Broken plural"
     },
     {
       "id": "broken_plural_afila",
@@ -1425,7 +1452,8 @@
           "root": "ط-ع-م",
           "note": "Singular طَعَام (one food) → many-form أَطْعِمَة (foods, types of food). Same af-3i-la frame as أَجْنِحَة, أَفْئِدَة, أَلْسِنَة: أ at the front, ة at the end, root letters in between."
         }
-      ]
+      ],
+      "card_label": "Broken plural"
     },
     {
       "id": "broken_plural_fuala",
@@ -1475,7 +1503,8 @@
           "root": "و-ز-ر",
           "note": "Singular وَزِير (one minister) → many-form وُزَرَاء (ministers). Same fu-3a-laa' mold: damma, fatha, fatha plus long ا, hamza. Used here for a group of human officeholders — exactly the kind of meaning this mold is reserved for."
         }
-      ]
+      ],
+      "card_label": "Broken plural"
     },
     {
       "id": "sound_plural_masculine",
@@ -1525,7 +1554,8 @@
           "root": "ه-ن-د-س",
           "note": "Singular مُهَنْدِس (one engineer) → many-form المُهَنْدِسُونَ (the engineers). The ـُونَ ending because they're the subject doing the verb يَعْمَلُونَ. Strip the ending and you get the singular back unchanged — that's the signature of this many-form."
         }
-      ]
+      ],
+      "card_label": "Regular masculine plural"
     },
     {
       "id": "sound_plural_feminine",
@@ -1575,7 +1605,8 @@
           "root": "ط-ل-ب",
           "note": "Singular طَالِبَة (one female student) → many-form الطَّالِبَات (female students). The ة of the singular gets replaced by ـَات. Same shape as مُسْلِمَات, مُؤْمِنَات in the Quranic verses — the standard many-form for groups of women."
         }
-      ]
+      ],
+      "card_label": "Regular feminine plural"
     },
     {
       "id": "dual_form",
@@ -1625,7 +1656,8 @@
           "root": "ك-ت-ب",
           "note": "Singular كِتَاب (one book) → dual كِتَابَانِ (two books). The ـَانِ ending because the word is the subject of the sentence. Strip the ـَانِ and you get كِتَاب back unchanged — that's the signature of the dual."
         }
-      ]
+      ],
+      "card_label": "Dual (exactly two)"
     },
     {
       "id": "inna_and_sisters",
@@ -1673,7 +1705,8 @@
           "highlight": "إِنَّ الطَّقْسَ",
           "note": "Plain modern usage of إِنَّ to open a statement firmly. Notice the fatha ending on الطَّقْسَ — on its own that word would end in a damma (الطَّقْسُ), but the إِنَّ in front pulls the ending to fatha. That swap is the visual signature of this whole family of framers."
         }
-      ]
+      ],
+      "card_label": "Sentence starter: indeed"
     },
     {
       "id": "kana_and_sisters",
@@ -1721,7 +1754,8 @@
           "highlight": "كَانَ الجَوُّ بَارِدًا",
           "note": "Textbook كَانَ pattern. Notice the fatha ending on بَارِدًا — on its own that word would end in damma (بَارِدٌ), but كَانَ at the front pulls the description to a fatha ending. That fatha is the visible signature of this whole family of being-verbs."
         }
-      ]
+      ],
+      "card_label": "Was/is/will be"
     },
     {
       "id": "relative_pronouns_alladhi",
@@ -1769,7 +1803,8 @@
           "highlight": "الَّذِي اشْتَرَيْتُهُ",
           "note": "Single masculine thing (الكِتَاب) so the form is الَّذِي. Inside the clause you see the typical move: اشْتَرَيْتُ = 'I bought' and then ـهُ = 'it,' with the ـهُ pointing back to the book. Literally: 'the book — the-which — I bought it.' Compare this to the English 'the book that I bought,' where English drops the 'it' — Arabic keeps it."
         }
-      ]
+      ],
+      "card_label": "Who/which/that"
     },
     {
       "id": "negation_la_present",
@@ -1816,7 +1851,8 @@
           "highlight": "لَا أَشْرَبُ",
           "note": "Plain everyday negation. لَا + present-tense verb أَشْرَبُ ('I drink'). The damma at the end of أَشْرَبُ stays untouched. Reading: a general habit — 'I don't drink coffee' as a standing fact about the speaker."
         }
-      ]
+      ],
+      "card_label": "Not (present)"
     },
     {
       "id": "negation_lam_past",
@@ -1864,7 +1900,8 @@
           "highlight": "لَمْ أَذْهَبْ",
           "note": "Plain modern usage. أَذْهَبُ on its own ('I go') ends in damma. After لَمْ the damma drops to sukun, giving أَذْهَبْ, and the meaning shifts to past: 'I did not go.' The presence of أَمْسِ ('yesterday') makes the past reading explicit, but the لَمْ + shortened ending already carries it."
         }
-      ]
+      ],
+      "card_label": "Did not (past)"
     },
     {
       "id": "negation_lan_future",
@@ -1913,7 +1950,8 @@
           "highlight": "لَنْ أَنْسَى",
           "note": "Standard emphatic future negation. أَنْسَى is the 'I forget' shape; with لَنْ in front the meaning becomes 'I will never forget.' For verbs ending in a long vowel like أَنْسَى the visible ending change is subtle (it's a different ending category), but the لَنْ in front still does its job: future negation, with a firm flavor."
         }
-      ]
+      ],
+      "card_label": "Will not (future)"
     },
     {
       "id": "negation_laysa",
@@ -1961,7 +1999,8 @@
           "highlight": "لَيْسَ الجَوُّ بَارِدًا",
           "note": "Plain لَيْسَ shape. The thing (الجَوُّ) keeps its normal damma ending; the description بَارِدًا ends in fatha — the visible signature of لَيْسَ doing its linking-and-negating job. Compare this to كَانَ الجَوُّ بَارِدًا ('the weather was cold') — same mechanics, opposite meaning."
         }
-      ]
+      ],
+      "card_label": "Is not"
     },
     {
       "id": "negation_ma",
@@ -2010,7 +2049,8 @@
           "highlight": "مَا قَرَأْتُ",
           "note": "Plain مَا + past-tense verb. قَرَأْتُ ('I read,' past) keeps its full shape; مَا at the front negates it. Equivalent in meaning to لَمْ أَقْرَأِ الكِتَابَ, just using a different tool. Both are correct; مَا feels slightly older or more literary, while لَمْ is the everyday choice in modern Standard Arabic."
         }
-      ]
+      ],
+      "card_label": "Not (past)"
     },
     {
       "id": "conditional_in",
@@ -2062,7 +2102,8 @@
           "root": null,
           "note": "A textbook two-verb إِنْ sentence — both verbs end in sukun. Modern Arabic often prefers إِذَا here, but the إِنْ form survives in proverbs and formal writing."
         }
-      ]
+      ],
+      "card_label": "If (maybe)"
     },
     {
       "id": "conditional_idha",
@@ -2114,7 +2155,8 @@
           "root": "w-s-l",
           "note": "وَصَلْتَ is past-shaped, but the meaning is 'once you've arrived' — future from the speaker's point of view. This is the standard إِذَا pattern in everyday Arabic."
         }
-      ]
+      ],
+      "card_label": "When/if (expected)"
     },
     {
       "id": "conditional_law",
@@ -2166,7 +2208,8 @@
           "root": "kh-b-r",
           "note": "Same لَوْ ... لَـ shape in modern usage. The implication: I didn't know, and I didn't tell you."
         }
-      ]
+      ],
+      "card_label": "If only (didn't happen)"
     },
     {
       "id": "definite_article_al",
@@ -2217,7 +2260,8 @@
           "root": null,
           "note": "ط is a sun letter (الطَّالِب = 'aṭ-ṭālib'), ب is a moon letter (البَيْت = 'al-bayt'). Same الـ in writing, two different sounds."
         }
-      ]
+      ],
+      "card_label": "The (al-)"
     },
     {
       "id": "indefinite_tanwin",
@@ -2269,7 +2313,8 @@
           "root": "k-t-b",
           "note": "Both words end in ـً — 'kitāban jadīdan.' Indefinite, and in the direct-object position after a verb."
         }
-      ]
+      ],
+      "card_label": "A/an (-n sound)"
     },
     {
       "id": "vocative_ya",
@@ -2321,7 +2366,8 @@
           "root": null,
           "note": "Simple direct address with a name — no أَيُّهَا needed because أَحْمَد doesn't have الـ."
         }
-      ]
+      ],
+      "card_label": "O (calling)"
     },
     {
       "id": "exception_illa",
@@ -2373,7 +2419,8 @@
           "root": "sh-r-b",
           "note": "Same structure with a verb: deny broadly ('I drink no'), then admit one thing ('except water')."
         }
-      ]
+      ],
+      "card_label": "Except (illaa)"
     },
     {
       "id": "demonstratives",
@@ -2425,7 +2472,8 @@
           "root": null,
           "note": "Both feminine forms — هَذِهِ for the near car, تِلْكَ for the far one. سَيَّارَة is feminine, so the demonstratives match."
         }
-      ]
+      ],
+      "card_label": "This/that"
     },
     {
       "id": "attached_pronouns",
@@ -2477,7 +2525,8 @@
           "root": "b-y-t",
           "note": "ـنَا = 'our,' ـكُمْ = 'your (plural).' Same noun بَيْت with different endings."
         }
-      ]
+      ],
+      "card_label": "His/her/my (attached)"
     },
     {
       "id": "interrogatives",
@@ -2529,7 +2578,8 @@
           "root": null,
           "note": "Two interrogatives in one breath — أَيْنَ for place, مَتَى for time. Both sit at the front of their clauses."
         }
-      ]
+      ],
+      "card_label": "Question word"
     }
   ]
 }

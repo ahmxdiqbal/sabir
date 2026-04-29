@@ -319,6 +319,7 @@ interface SkillFromTaxonomy {
   category: string;
   subcategory?: string;
   internal_label: string;
+  card_label?: string;
   user_facing_pattern: string;
   semantic_note: string;
   why_explanation: string;
@@ -367,12 +368,8 @@ function leadAnchor(skill: SkillFromTaxonomy): Anchor | null {
   return ex ? { ref: ex.ref, text: ex.text, highlight: ex.highlight || null } : null;
 }
 
-function patternTeaser(skill: SkillFromTaxonomy, max = 100): string {
-  const s = (skill.user_facing_pattern || '').trim();
-  if (s.length <= max) return s;
-  const cut = s.slice(0, max);
-  const lastSpace = cut.lastIndexOf(' ');
-  return cut.slice(0, lastSpace > 60 ? lastSpace : max) + '…';
+function patternTeaser(skill: SkillFromTaxonomy): string {
+  return skill.card_label || skill.user_facing_pattern || '';
 }
 
 const STATUS_PRIORITY: Record<string, number> = {
@@ -472,7 +469,7 @@ app.get('/api/library', (_req, res) => {
     const item: LibraryItem = {
       id: skill.id,
       status: entry.status,
-      teaser: patternTeaser(skill as SkillFromTaxonomy, 90),
+      teaser: patternTeaser(skill as SkillFromTaxonomy),
       anchor: leadAnchor(skill as SkillFromTaxonomy),
       reviewCount: entry.reviewCount || 0,
       lastReviewedAt: entry.lastReviewedAt || null,

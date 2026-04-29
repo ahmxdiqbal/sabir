@@ -322,24 +322,12 @@
         row.dataset.skillId = skill.id;
         const left = document.createElement('div');
         left.className = 'library-row-left';
-        if (skill.anchor?.highlight) {
-            left.appendChild(Object.assign(document.createElement('span'), {
-                className: 'library-arabic',
-                lang: 'ar',
-                dir: 'rtl',
-                textContent: skill.anchor.highlight,
-            }));
-        }
         left.appendChild(Object.assign(document.createElement('span'), {
             className: 'library-teaser',
             textContent: skill.teaser,
         }));
         const right = document.createElement('div');
         right.className = 'library-row-right';
-        right.appendChild(Object.assign(document.createElement('span'), {
-            className: `status-pill ${skill.status}`,
-            textContent: skill.status === 'not_probed' ? 'not probed' : skill.status,
-        }));
         if (skill.reviewCount > 0) {
             right.appendChild(Object.assign(document.createElement('span'), {
                 className: 'review-count',
@@ -357,19 +345,6 @@
         card_.dataset.skillId = item.id;
         const top = document.createElement('div');
         top.className = 'queue-card-top';
-        if (item.anchor?.highlight) {
-            top.appendChild(Object.assign(document.createElement('p'), {
-                className: 'queue-arabic',
-                lang: 'ar',
-                dir: 'rtl',
-                textContent: item.anchor.highlight,
-            }));
-        }
-        const pill = Object.assign(document.createElement('span'), {
-            className: `status-pill ${item.status}`,
-            textContent: item.status,
-        });
-        top.appendChild(pill);
         card_.appendChild(top);
         card_.appendChild(Object.assign(document.createElement('p'), {
             className: 'queue-teaser',
