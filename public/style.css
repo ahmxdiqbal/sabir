@@ -19,7 +19,7 @@ html, body {
 }
 
 main {
-  max-width: 960px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 4rem 2rem 4rem;
 }
@@ -522,8 +522,15 @@ hr {
 
 .lesson-body {
   display: flex;
-  gap: 2.5rem;
   align-items: flex-start;
+}
+
+.lesson-divider {
+  width: 1px;
+  flex-shrink: 0;
+  background: #e5e3dc;
+  margin: 2rem 1.25rem;
+  align-self: stretch;
 }
 
 .lesson-content {
@@ -608,19 +615,25 @@ hr {
 
 /* ── Lesson chat ── */
 .lesson-chat {
-  width: 320px;
+  position: sticky;
+  top: 2rem;
+  width: 480px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  background: #fafaf7;
+  border: 1px solid #d8d6d0;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .chat-messages {
-  height: 320px;
+  height: 480px;
   overflow-y: auto;
-  padding: 0.5rem 0;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .chat-message {
@@ -634,27 +647,34 @@ hr {
   padding: 0.625rem 0.875rem;
   background: #f3f1ea;
   color: #1a1a1a;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .chat-message.user {
   align-self: flex-end;
   max-width: 90%;
-  color: #444;
-  text-align: right;
+  padding: 0.625rem 0.875rem;
+  background: #2a2a2a;
+  color: #f0eee8;
+  border-radius: 8px;
 }
 
 .chat-message.error {
   align-self: flex-start;
+  max-width: 100%;
+  padding: 0.625rem 0.875rem;
   color: #6b2a23;
   font-style: italic;
+  background: #f4dcd9;
+  border-radius: 8px;
 }
 
 .chat-input-row {
   display: flex;
   gap: 0.5rem;
-  padding-top: 0.625rem;
+  padding-top: 0.75rem;
   border-top: 1px solid #e5e3dc;
+  margin-top: auto;
 }
 
 .chat-input-row textarea {
@@ -663,6 +683,14 @@ hr {
   padding: 0.5rem 0.625rem;
   font-size: 0.8125rem;
   resize: none;
+  border: 1px solid #d8d6d0;
+  border-radius: 8px;
+  background: #fafaf7;
+  outline: none;
+}
+
+.chat-input-row textarea:focus {
+  border-color: #c0bdb0;
 }
 
 .chat-input-row button {
@@ -685,7 +713,7 @@ hr {
     width: 100%;
   }
   .chat-messages {
-    height: 260px;
+    height: 390px;
   }
 }
 
